@@ -2,7 +2,7 @@ import argparse
 import boto3
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from constants import (
     EBS_GP3_PRICE_PER_GB,
@@ -91,6 +91,108 @@ def scan_ebs_volumes(delete_mode=False):
                     VolumeId=volume["VolumeId"]
                 )
 
+def scan_stopped_instances(
+    max_stopped_days=14,
+    delete_mode=False
+):
+    response = ec2.describe_instances()
+
+    reservations = response["Reservations"]
+
+    for reservation in reservations:
+        for instance in reservation["Instances"]:
+
+            tags = instance.get("Tags", [])
+
+            check_missing_tags(
+                instance["InstanceId"],
+                "ec2_instance",
+                tags
+            )
+
+            state = instance["State"]["Name"]
+
+            if state == "stopped":
+
+                launch_time = instance.get(
+                    "LaunchTime",
+                    datetime.now(timezone.utc)
+                )
+
+                age_days = (
+                    datetime.now(timezone.utc)
+                    - launch_time
+                ).days
+
+                if age_days >= max_stopped_days:
+
+                    findings.append({
+                        "resource_id": instance["InstanceId"],
+                        "resource_type": "ec2_instance",
+                        "reason": "stopped_instance",
+                        "age_days": age_days,
+                        "estimated_monthly_cost_usd": 15,
+                        "tags": get_tag_dict(tags),
+                        "suggested_action": "terminate",
+                        "safe_to_auto_delete": False
+                    })
+
+                    tag_dict = get_tag_dict(tags)
+
+                    if (
+                        delete_mode and
+                        tag_dict.get("Protected") != "true"
+                    ):
+                        ec2.terminate_instances(
+                            InstanceIds=[
+                                instance["InstanceId"]
+                            ]
+                        )
+
+def scan_unused_eips(delete_mode=False):
+    response = ec2.describe_addresses()
+
+    for address in response["Addresses"]:
+
+        allocation_id = address.get(
+            "AllocationId",
+            "unknown"
+        )
+
+        association_id = address.get(
+            "AssociationId"
+        )
+
+        tags = address.get("Tags", [])
+
+        check_missing_tags(
+            allocation_id,
+            "elastic_ip",
+            tags
+        )
+
+        if not association_id:
+
+            findings.append({
+                "resource_id": allocation_id,
+                "resource_type": "elastic_ip",
+                "reason": "unassociated_eip",
+                "age_days": 0,
+                "estimated_monthly_cost_usd": 3.5,
+                "tags": get_tag_dict(tags),
+                "suggested_action": "release",
+                "safe_to_auto_delete": True
+            })
+
+            tag_dict = get_tag_dict(tags)
+
+            if (
+                delete_mode and
+                tag_dict.get("Protected") != "true"
+            ):
+                ec2.release_address(
+                    AllocationId=allocation_id
+                )
 
 def generate_report():
     total_waste = sum(
@@ -150,9 +252,24 @@ def main():
         action="store_true"
     )
 
+    parser.add_argument(
+    "--max-stopped-days",
+    type=int,
+    default=14
+)
+    
     args = parser.parse_args()
 
     scan_ebs_volumes(
+        delete_mode=args.delete
+    )
+
+    scan_stopped_instances(
+        max_stopped_days=args.max_stopped_days,
+        delete_mode=args.delete
+    )
+
+    scan_unused_eips(
         delete_mode=args.delete
     )
 
