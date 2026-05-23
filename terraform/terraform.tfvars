@@ -1,0 +1,5 @@
+aws_region       = "us-east-1"
+environment      = "staging"
+project          = "NimbusKart"
+owner            = "Suvan"
+ssh_allowed_cidr = "0.0.0.0/0"
