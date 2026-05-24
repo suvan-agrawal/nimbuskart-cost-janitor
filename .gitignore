@@ -21,5 +21,7 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Reports
+
 report.json
+report.json
+report.md

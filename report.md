@@ -1,7 +1,7 @@
 # Cost Janitor Report
 
-Total Findings: 6
-Estimated Monthly Waste: $4.54
+Total Findings: 7
+Estimated Monthly Waste: $19.54
 
 ## vol-920d6872
 - Type: ebs_volume
@@ -27,6 +27,11 @@ Estimated Monthly Waste: $4.54
 - Type: ebs_volume
 - Reason: unattached
 - Suggested Action: delete
+
+## i-1f4d351de8811f94d
+- Type: ec2_instance
+- Reason: stopped_instance
+- Suggested Action: terminate
 
 ## eipalloc-5654f530
 - Type: elastic_ip

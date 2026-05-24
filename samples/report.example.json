@@ -1,0 +1,100 @@
+{
+  "scan_timestamp": "2026-05-24T06:46:15.432744+00:00",
+  "account_id": "000000000000",
+  "region": "us-east-1",
+  "summary": {
+    "total_orphans": 7,
+    "estimated_monthly_waste_usd": 19.54
+  },
+  "findings": [
+    {
+      "resource_id": "vol-920d6872",
+      "resource_type": "ebs_volume",
+      "reason": "unattached",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.64,
+      "tags": {
+        "Environment": "staging",
+        "Owner": "Suvan",
+        "Name": "NimbusKart-orphan-volume",
+        "ManagedBy": "terraform",
+        "Project": "NimbusKart"
+      },
+      "suggested_action": "delete",
+      "safe_to_auto_delete": true
+    },
+    {
+      "resource_id": "vol-7ca8b8ec",
+      "resource_type": "ebs_volume",
+      "reason": "missing_tags: Project, Environment, Owner",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0,
+      "tags": {},
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false
+    },
+    {
+      "resource_id": "vol-b2008a94",
+      "resource_type": "ebs_volume",
+      "reason": "missing_tags: Project, Environment, Owner",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0,
+      "tags": {},
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false
+    },
+    {
+      "resource_id": "vol-47e8b69b",
+      "resource_type": "ebs_volume",
+      "reason": "missing_tags: Project, Environment, Owner",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0,
+      "tags": {},
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false
+    },
+    {
+      "resource_id": "vol-47e8b69b",
+      "resource_type": "ebs_volume",
+      "reason": "unattached",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.4,
+      "tags": {},
+      "suggested_action": "delete",
+      "safe_to_auto_delete": true
+    },
+    {
+      "resource_id": "i-1f4d351de8811f94d",
+      "resource_type": "ec2_instance",
+      "reason": "stopped_instance",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 15,
+      "tags": {
+        "Environment": "staging",
+        "Tier": "web",
+        "ManagedBy": "terraform",
+        "Project": "NimbusKart",
+        "Owner": "Suvan",
+        "Name": "NimbusKart-web-1"
+      },
+      "suggested_action": "terminate",
+      "safe_to_auto_delete": false
+    },
+    {
+      "resource_id": "eipalloc-5654f530",
+      "resource_type": "elastic_ip",
+      "reason": "unassociated_eip",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 3.5,
+      "tags": {
+        "Environment": "staging",
+        "ManagedBy": "terraform",
+        "Project": "NimbusKart",
+        "Owner": "Suvan",
+        "Name": "unused-eip"
+      },
+      "suggested_action": "release",
+      "safe_to_auto_delete": true
+    }
+  ]
+}
